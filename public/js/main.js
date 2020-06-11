@@ -15,17 +15,21 @@ const socket = io();
 // Join chatroom
 socket.emit('joinRoom', { username, room });
 
-console.log(username, room);
+// Get room and users
+
+socket.on('roomUsers', ({ room, users }) => {
+  showRoomName(room);
+  showUsers(users)
+})
 
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
-  outputRoomName(room);
-  outputUsers(users);
+  showRoomName(room);
+  showUsers(users);
 });
 
 // Message from server
 socket.on('message', message => {
-  console.log(message);
   outputMessage(message);
 
   // Scroll down
@@ -48,7 +52,7 @@ chatForm.addEventListener('submit', e => {
 });
 
 // Output message to DOM
-function outputMessage(message) {
+const outputMessage = message => {
   const div = document.createElement('div');
   div.classList.add('message');
   div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span></p>
@@ -57,5 +61,16 @@ function outputMessage(message) {
   </p>`;
   document.querySelector('.chat-messages').appendChild(div);
 }
+
+const showRoomName = room => {
+  roomName.innerText = room;
+}
+
+const showUsers = users => {
+  userList.innerHTML = `
+    ${users.map(user => `<li>${user.username}</li>`).join('')}
+  `;
+}
+
 
 
